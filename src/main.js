@@ -2,9 +2,7 @@ import Vue from 'vue'
 // import app from './components/app/app.vue'
 import VueRouter from 'vue-router'
 import routerMap from './routers';
-
 import './components/app/style.css';
-
 
 Vue.config.debug = true
 Vue.use(VueRouter);

@@ -12,18 +12,18 @@ var plugins = [
     //提公用js到common.js文件中
     new webpack.optimize.CommonsChunkPlugin('common.js'),
     //将样式统一发布到style.css中
-    new ExtractTextPlugin("style.css", {
-        allChunks: true,
-        disable: false
-    }),
+    new ExtractTextPlugin("style.css"),
     // 使用 ProvidePlugin 加载使用率高的依赖库
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      "window.jQuery": "jquery"
-    })
+    // new webpack.ProvidePlugin({
+    //   $: 'jquery',
+    //   jQuery: 'jquery',
+    //   "window.jQuery": "jquery"
+    // })
 ];
-var entry = ['./src/main'],
+var entry = [
+  'bootstrap-sass!./bootstrap-sass.config.js',
+  './src/main'
+],
     cdnPrefix = "",
     buildPath = "/dist/",
     publishPath = cdnPrefix + buildPath;
@@ -44,9 +44,15 @@ module.exports = {
         chunkFilename:"[id].build.js?[chunkhash]"
     },
     module: {
-        loaders: [{
+        loaders: [
+        { test: /bootstrap-sass\/assets\/javascripts\//, loader: 'imports?jQuery=jquery' },
+        {
             test: /\.vue$/,
             loader: 'vue-loader',
+        },{
+            test: /\.scss$/,
+            loader: ExtractTextPlugin.extract(
+                "style-loader", 'css-loader?sourceMap!sass-loader!cssnext-loader')
         }, {
             test: /\.css$/,
             loader: ExtractTextPlugin.extract(
@@ -58,7 +64,9 @@ module.exports = {
         },{
             test: /\.(jpg|png|gif)$/,
             loader: "file-loader?name=images/[hash].[ext]"
-        }, {
+        },{ test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+          loader: "url?limit=10000&mimetype=application/font-woff"
+        },{
             test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
             loader: "url-loader?limit=10000&minetype=application/font-woff"
         }, {
@@ -72,11 +80,11 @@ module.exports = {
             loader: 'html-loader'
         }]
     },
-    externals:[
-      {
-        'jquery': 'window.jQuery'
-      }
-    ],
+    // externals:[
+    //   {
+    //     'jquery': 'window.jQuery'
+    //   }
+    // ],
     babel: {
         presets: ['es2015', 'stage-0'],
         plugins: ['transform-runtime']
